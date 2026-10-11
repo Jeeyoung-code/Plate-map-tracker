@@ -41,7 +41,6 @@ A web app for tracking sample positions, treatments and used wells on 4–384 we
 
 - Korean: https://jeeyoung-code.github.io/Plate-map-tracker/ko/
 - English: https://jeeyoung-code.github.io/Plate-map-tracker/en/
-- 
 
 ### Features
 - Register experiments (plates): project, status, seeding date (Day 0), experiment date, plate format

@@ -288,6 +288,26 @@ const SOFTEN = {"#e4572e":"#d9907e","#f3a712":"#e2b475","#e9d758":"#dccf8e","#76
   "#3a86ff":"#93b4d8","#6a4c93":"#b0a4d0","#d16ba5":"#d7a8c4","#8d6e63":"#bba595","#90a4ae":"#aab4ba"};
 const STATUS = { plan:"계획", active:"실험", done:"완료" };
 const defaultStatus = e => e.seedDate && e.seedDate <= today() ? "active" : "plan";
+/* Sample plates shown on a device's very first visit (local storage only). Dates are relative to today. */
+function shiftDay(n){ const d = new Date(); d.setDate(d.getDate() + n); return new Date(d - d.getTimezoneOffset()*6e4).toISOString().slice(0,10); }
+function sampleExperiments(){
+  const W = (rows, cols) => [...rows].flatMap(r => cols.map(c => r + c));
+  const seed = shiftDay(-3), treat = shiftDay(-1), proj = "(예시) Drug A 스크리닝";
+  return [
+    { id:"sample-hela", example:true, name:"HeLa 약물 처리 (MTT)", project:proj, status:"active", wells:96,
+      seedDate:seed, date:shiftDay(0), desc:"예시 데이터입니다. 둘러본 뒤 '실험 삭제'로 지우세요.\nHeLa, passage 12 · 5×10³ cells/well",
+      groups:[
+        { id:"s1", name:"Blank", color:"#aab4ba", wells:W("AB",[1,2,3]), date:treat, condition:"세포 없음", memo:"", showLabel:true },
+        { id:"s2", name:"Control (DMSO 0.1%)", color:"#93b4d8", wells:W("AB",[4,5,6]), date:treat, condition:"DMSO 0.1%, 24 h", memo:"", showLabel:true },
+        { id:"s3", name:"Drug A 1 µM", color:"#a3c495", wells:W("CD",[1,2,3]), date:treat, condition:"1 µM, 24 h, 37 °C", memo:"", showLabel:true },
+        { id:"s4", name:"Drug A 10 µM", color:"#e2b475", wells:W("CD",[4,5,6]), date:treat, condition:"10 µM, 24 h, 37 °C", memo:"", showLabel:true },
+        { id:"s5", name:"Drug A 50 µM", color:"#d9907e", wells:W("EF",[1,2,3]), date:treat, condition:"50 µM, 24 h, 37 °C", memo:"DMSO stock 50 mM에서 희석", showLabel:true },
+      ],
+      uses:[{ id:"su1", date:shiftDay(0), purpose:"Western blot", memo:"lysate 수확", wells:["C3","D3"] }] },
+    { id:"sample-a549", example:true, name:"A549 2차", project:proj, status:"plan", wells:24,
+      seedDate:"", date:shiftDay(7), desc:"예시 데이터입니다.", groups:[], uses:[] },
+  ];
+}
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -322,6 +342,12 @@ const store = {
         e => { setStore(false,"저장소 연결이 끊겼습니다. 새로고침해 주세요"); });
     } else {
       setStore(false,"이 브라우저에 저장됨 · 백업 권장");
+      try {
+        if(!localStorage.getItem(LS_KEY + "-seeded")){
+          if(localStorage.getItem(LS_KEY) === null) this.writeLocal(sampleExperiments());
+          localStorage.setItem(LS_KEY + "-seeded", "1");
+        }
+      } catch(_){}
       onChange(this.readLocal());
     }
   },
@@ -368,7 +394,7 @@ store.attachRemote = function(remote){
   });
 };
 store.migrate = function(cloud){
-  const local = this.readLocal(); if(!local.length) return;
+  const local = this.readLocal().filter(x => !x.example); if(!local.length){ this.writeLocal([]); return; }
   try { localStorage.setItem(LS_KEY + "-before-login", JSON.stringify(local)); } catch(_){}
   const have = new Set(cloud.map(x => x.id)); let n = 0;
   local.forEach(x => { if(!have.has(x.id)){ const b = {...x}; delete b.id; this.remote.save(this.user.uid, x.id, b).catch(()=>{}); n++; } });
