@@ -236,6 +236,21 @@ textarea.inp{resize:vertical;min-height:64px}
 .confirm.ok{background:var(--accent-soft);border-color:var(--accent)}
 .confirm .inline{display:inline-flex;align-items:center;gap:6px}
 .confirm .inline .inp{width:auto;padding:3px 6px}
+.help-btn{font-weight:600}
+.help{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.help-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+.help-bar h2{font-size:15px}
+.help-n{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.help-tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1;min-width:0}
+.help-tabs button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:2px 10px;font-size:12px;cursor:pointer;color:var(--muted)}
+.help-tabs button[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.help-body{flex:1;overflow:auto;padding:16px;touch-action:pan-x pan-y}
+.help-body img{display:block;margin:0 auto;width:100%;max-width:860px;height:auto;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:zoom-in}
+.help-body img.zoomed{width:1080px;max-width:none;cursor:zoom-out}
+.help-hint{font-size:11.5px;color:var(--muted)}
+.help-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid var(--line);background:var(--surface)}
+@media (max-width:720px){.help-tabs{order:3;flex-basis:100%}.help-body{padding:8px}}
 .empty{padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
 .empty h2{font-size:18px}
 .empty p{margin:0;color:var(--muted);max-width:44ch}
@@ -255,6 +270,7 @@ body{margin:0}[hidden]{display:none!important}img{max-width:100%}
 
 <header class="topbar">
   <div class="brand"><h1>Plate Map Tracker</h1><span>well plate · sample log</span><a class="langlink" href="../en/" lang="en">English</a></div>
+  <button class="btn sm help-btn" id="helpBtn" data-act="help" hidden>? 사용법</button>
   <div class="store"><i class="dot" id="storeDot"></i><span id="storeTxt">저장소 연결 중…</span><span class="acct" id="acct" hidden></span><button class="btn sm" id="authBtn" data-act="auth" hidden>Google로 로그인</button><button class="btn sm" id="exportBtn" title="모든 실험을 JSON 파일로 저장">백업 내보내기</button><label class="btn sm" style="cursor:pointer" title="백업 JSON 파일 불러오기">백업 불러오기<input type="file" id="importInp" accept=".json,application/json" hidden></label></div>
 </header>
 
@@ -275,6 +291,7 @@ body{margin:0}[hidden]{display:none!important}img{max-width:100%}
 </div>
 <div class="toast" id="toast" hidden></div>
 
+<script>window.PLATE_HELP = {"items": [{"title": "실험 등록", "src": "guide/guide-01-register.webp"}, {"title": "구역 정보 입력", "src": "guide/guide-02-groups.webp"}, {"title": "사용한 well 표시", "src": "guide/guide-03-used-wells.webp"}, {"title": "Plate map 내보내기", "src": "guide/guide-04-export.webp"}, {"title": "프로젝트 · 상태", "src": "guide/guide-05-projects-status.webp"}]};</script>
 <script>
 (() => {
 const TYPES = {
@@ -431,7 +448,7 @@ function setStore(on,txt){ $("#storeDot").classList.toggle("on",on); $("#storeTx
 /* ---------- state ---------- */
 const state = {
   exps:[], currentId:null, view:"empty", // empty | new | edit | plate
-  sel:new Set(), kind:"group", zoom:1, pan:false, exportOpen:false, legendOpen:true, statusFilter:"all", projectFilter:"", collapsed:new Set(), confirmDone:false, doneDraft:"", exportOpts:{name:true, cond:false, memo:false, used:true}, activeGroup:null, activeUse:null, hover:null, q:"", confirmDel:null,
+  sel:new Set(), kind:"group", zoom:1, pan:false, helpIdx:null, exportOpen:false, legendOpen:true, statusFilter:"all", projectFilter:"", collapsed:new Set(), confirmDone:false, doneDraft:"", exportOpts:{name:true, cond:false, memo:false, used:true}, activeGroup:null, activeUse:null, hover:null, q:"", confirmDel:null,
   draft:{ name:"", color:PALETTE[0], date:"", condition:"", memo:"" },
   useDraft:{ date:today(), purpose:"", memo:"" },
   newForm:{ name:"", type:96, date:"", seedDate:"", desc:"" }
@@ -678,6 +695,38 @@ function legendHTML(exp){
   </aside>`;
 }
 
+/* ---------- in-app usage guide (web app builds provide window.PLATE_HELP) ---------- */
+function renderHelp(){
+  const H = window.PLATE_HELP; let el = document.getElementById("help");
+  if(state.helpIdx === null || !H){ if(el){ el.remove(); document.body.style.overflow = ""; } return; }
+  const i = state.helpIdx, n = H.items.length;
+  if(!el){ el = document.createElement("div"); el.id = "help"; el.className = "help"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true"); document.body.appendChild(el); }
+  document.body.style.overflow = "hidden";
+  el.setAttribute("aria-label", "사용법");
+  el.innerHTML = `<div class="help-bar"><h2>사용법</h2><span class="help-n">${i+1} / ${n}</span>
+      <div class="help-tabs">${H.items.map((it,k)=>`<button data-help="${k}" aria-current="${k===i}">${k+1}. ${esc(it.title)}</button>`).join("")}</div>
+      <button class="btn sm" data-act="helpClose">닫기 ✕</button></div>
+    <div class="help-body" id="helpBody"><img src="${esc(H.items[i].src)}" alt="${esc(H.items[i].title)}"></div>
+    <div class="help-nav"><button class="btn sm" data-act="helpPrev" ${i===0?"disabled":""}>‹ 이전</button><span class="help-hint">이미지를 누르면 크게 볼 수 있어요</span>
+      <button class="btn sm primary" data-act="${i===n-1?"helpClose":"helpNext"}">${i===n-1?"사용 시작하기":"다음 ›"}</button></div>`;
+  el.querySelector("#helpBody").scrollTop = 0;
+  const img = el.querySelector("#helpBody img");
+  img.addEventListener("click", () => { img.classList.toggle("zoomed"); });
+  el.querySelector("[data-act=helpClose]").focus();
+}
+function openHelp(i){ state.helpIdx = i; renderHelp(); }
+function closeHelp(){ state.helpIdx = null; renderHelp(); try{ localStorage.setItem("plate-tracker-help-seen","1"); }catch(_){} }
+let helpTouch = null;
+document.addEventListener("touchstart", e => { if(e.target.closest?.("#helpBody")) helpTouch = { x:e.touches[0].clientX, y:e.touches[0].clientY }; }, { passive:true });
+document.addEventListener("touchend", e => {
+  if(!helpTouch || state.helpIdx === null) return;
+  const dx = e.changedTouches[0].clientX - helpTouch.x, dy = e.changedTouches[0].clientY - helpTouch.y; helpTouch = null;
+  if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5){
+    const n = window.PLATE_HELP.items.length;
+    openHelp(Math.min(n-1, Math.max(0, state.helpIdx + (dx < 0 ? 1 : -1))));
+  }
+}, { passive:true });
+
 function hoverHTML(exp){
   const w = state.hover; if(!w) return `<span>well을 탭하거나 마우스를 올리면 정보가 보입니다.</span>`;
   const g = groupOf(exp,w), u = useOf(exp,w);
@@ -836,6 +885,7 @@ document.addEventListener("click", e => {
   if(t.dataset.row) return selectLine("row", +t.dataset.row, e.shiftKey||e.ctrlKey||e.metaKey);
   if(t.dataset.col) return selectLine("col", +t.dataset.col, e.shiftKey||e.ctrlKey||e.metaKey);
   if(t.dataset.all) return selectLine("all", 0, false);
+  if(t.dataset.help){ openHelp(+t.dataset.help); return; }
   if(t.dataset.nfstatus){ readNewForm(); state.newForm.status = t.dataset.nfstatus; state.newForm.statusTouched = true; renderBench(); return; }
   if(t.dataset.type){ readNewForm(); state.newForm.type = +t.dataset.type; renderBench(); return; }
   if(t.dataset.color){ readDraft(); state.draft.color = t.dataset.color; renderSide(); return; }
@@ -875,6 +925,10 @@ document.addEventListener("click", e => {
     case "delExpYes": { const id=exp.id; state.confirmDel=null; state.exps=state.exps.filter(x=>x.id!==id); state.currentId=state.exps[0]?.id||null;
       state.view = state.currentId?"plate":"empty"; resetEditor(); store.remove(id); renderAll(); toast("실험을 삭제했습니다"); break; }
     case "csv": copyCSV(exp); break;
+    case "help": openHelp(0); break;
+    case "helpClose": closeHelp(); break;
+    case "helpPrev": openHelp(Math.max(0, state.helpIdx - 1)); break;
+    case "helpNext": openHelp(Math.min(window.PLATE_HELP.items.length - 1, state.helpIdx + 1)); break;
     case "legend": state.legendOpen = !state.legendOpen; try{ localStorage.setItem("plate-tracker-legend", state.legendOpen?"1":"0"); }catch(_){} renderBench(); break;
     case "startExp": exp.status = "active"; store.save(exp); renderAll(); toast("상태를 실험으로 바꿨습니다"); break;
     case "doneExp": state.confirmDone = true; state.doneDraft = today(); renderBench(); break;
@@ -975,9 +1029,21 @@ function copyCSV(exp){
     try{ document.execCommand("copy"); toast("CSV를 복사했습니다. 엑셀에 붙여넣으세요"); }catch(_){ toast("복사하지 못했습니다"); } ta.remove(); };
   try { navigator.clipboard.writeText(text).then(()=>toast("CSV를 복사했습니다. 엑셀에 붙여넣으세요"), fallback); } catch(_){ fallback(); }
 }
+document.addEventListener("keydown", e => {
+  if(state.helpIdx === null) return;
+  const n = window.PLATE_HELP.items.length;
+  if(e.key === "Escape"){ e.stopImmediatePropagation(); closeHelp(); }
+  else if(e.key === "ArrowRight") openHelp(Math.min(n-1, state.helpIdx + 1));
+  else if(e.key === "ArrowLeft") openHelp(Math.max(0, state.helpIdx - 1));
+}, true);
 document.addEventListener("keydown", e => { if(e.key==="Escape" && state.view==="plate" && state.sel.size){ state.sel=new Set(); renderBench(); renderSide(); } });
 
 try{ if(localStorage.getItem("plate-tracker-legend")==="0") state.legendOpen=false; }catch(_){}
+if(window.PLATE_HELP){
+  $("#helpBtn").hidden = false;
+  let seen = true; try{ seen = !!localStorage.getItem("plate-tracker-help-seen"); }catch(_){}
+  if(!seen) setTimeout(() => openHelp(0), 300);
+}
 /* ---------- backup: export / import JSON (standalone version) ---------- */
 document.getElementById("exportBtn").addEventListener("click", () => {
   const blob = new Blob([JSON.stringify({app:"plate-map-tracker",version:2,exportedAt:new Date().toISOString(),experiments:state.exps},null,2)],{type:"application/json"});

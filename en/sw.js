@@ -1,6 +1,7 @@
 // Offline cache for Plate Map Tracker
-const CACHE = "plate-map-v4";
-const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png"];
+const CACHE = "plate-map-v5";
+const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png",
+  "./guide/guide-01-register.webp", "./guide/guide-02-groups.webp", "./guide/guide-03-used-wells.webp", "./guide/guide-04-export.webp", "./guide/guide-05-projects-status.webp"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
