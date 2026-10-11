@@ -222,6 +222,8 @@ textarea.inp{resize:vertical;min-height:64px}
 .proj-h .caret{width:10px;font-size:10px}
 .st{display:inline-block;font-size:10.5px;font-weight:600;padding:0 6px;border-radius:999px;border:1px solid currentColor;line-height:1.5}
 .st.plan{color:var(--muted)} .st.active{color:var(--accent)} .st.done{color:var(--line-strong)}
+.exp .m{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
+.nw{white-space:nowrap}
 .exp.is-done .t{color:var(--muted)} .exp.is-done .badge{opacity:.6}
 .proj{color:var(--accent);font-weight:600}
 .daychip.done{background:var(--sunk);color:var(--muted)}
@@ -463,7 +465,7 @@ function renderList(){
     <li><button class="exp ${e.status==="done"?"is-done":""} ${e.id===state.currentId && state.view==="plate"?"active":""}" data-exp="${esc(e.id)}">
       <span class="badge">${e.wells}</span>
       <span class="t">${esc(e.name||"Untitled")}${e.example?'<span class="ex-tag">sample</span>':''}</span>
-      <span class="m"><span class="st ${e.status}">${STATUS[e.status]||""}</span> ${e.status!=="done"&&e.seedDate?`<b class="dayref">${dayOf(e,today())}</b> · `:""}${esc(e.date||"")}</span>
+      <span class="m"><span class="st ${e.status}">${STATUS[e.status]||""}</span>${e.status!=="done"&&e.seedDate?`<b class="dayref nw">${dayOf(e,today())}</b>`:""}${e.date?`<span class="nw">${esc(e.date)}</span>`:""}</span>
     </button></li>`).join(""));
   }).join("");
 }
@@ -536,7 +538,7 @@ function renderBench(){
       </div>
       ${state.confirmDel===exp.id?`<div style="padding:0 16px 12px"><div class="confirm">Delete this experiment and all of its groups? This cannot be undone.
         <button class="btn sm danger" data-act="delExpYes">Delete</button><button class="btn sm" data-act="delExpNo">Cancel</button></div></div>`:""}
-      ${state.confirmDone?`<div style="padding:0 16px 12px"><div class="confirm ok">Finish culture on this plate and set its status to <b>Done</b>?
+      ${state.confirmDone?`<div style="padding:0 16px 12px"><div class="confirm ok"><span>Finish culture on this plate and set its status to <b>Done</b>?</span>
         <label class="inline">Completion date <input type="date" class="inp" id="doneDate" value="${esc(state.doneDraft||today())}"></label>
         <button class="btn sm primary" data-act="doneYes">Mark done</button><button class="btn sm" data-act="doneNo">Cancel</button></div></div>`:""}
       ${state.exportOpen?exportPanelHTML(exp):""}
