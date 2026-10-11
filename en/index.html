@@ -48,7 +48,9 @@ h1,h2,h3{margin:0;text-wrap:balance}
 .brand{display:flex;align-items:baseline;gap:10px}
 .brand h1{font-size:17px;font-weight:700;letter-spacing:-.01em}
 .brand span{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
-.store{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.acct{font-family:var(--mono);font-size:11.5px;color:var(--fg);max-width:22ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:720px){.acct{display:none}}
+.store{flex-wrap:wrap;justify-content:flex-end;margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--line-strong)}
 .dot.on{background:#2e9d5b}
 
@@ -148,12 +150,13 @@ textarea.inp{resize:vertical;min-height:64px}
 .seg button{border:0;background:var(--bg);padding:7px 6px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--fg)}
 .seg button+button{border-left:1px solid var(--line-strong)}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
-.well.used::before,.xmark::before{content:"";position:absolute;inset:16%;pointer-events:none;
-  background:linear-gradient(45deg,transparent calc(50% - 1px),currentColor calc(50% - 1px),currentColor calc(50% + 1px),transparent calc(50% + 1px)),
-             linear-gradient(-45deg,transparent calc(50% - 1px),currentColor calc(50% - 1px),currentColor calc(50% + 1px),transparent calc(50% + 1px))}
-.well.used:not([style*="background"]){color:var(--fg)}
+.well.used::before{opacity:.5}
+.well.used::before,.xmark::before{content:"";position:absolute;inset:18%;pointer-events:none;
+  background:linear-gradient(45deg,transparent calc(50% - .75px),currentColor calc(50% - .75px),currentColor calc(50% + .75px),transparent calc(50% + .75px)),
+             linear-gradient(-45deg,transparent calc(50% - .75px),currentColor calc(50% - .75px),currentColor calc(50% + .75px),transparent calc(50% + .75px))}
+.well.used:not([style*="background"]){color:var(--muted)}
 .well.used span{opacity:.35}
-.xmark{display:inline-block;position:relative;width:13px;height:13px;border:1.5px solid var(--fg);border-radius:50%;color:var(--fg);vertical-align:-2px;flex:none}
+.xmark{display:inline-block;position:relative;width:13px;height:13px;border:1.2px solid var(--muted);border-radius:50%;color:var(--muted);vertical-align:-2px;flex:none}
 .group .xmark{margin-top:3px}
 .usedtag{display:inline-flex;align-items:center;gap:5px;font-weight:600;color:var(--fg)}
 .type:disabled{opacity:.35;cursor:not-allowed}
@@ -183,6 +186,54 @@ textarea.inp{resize:vertical;min-height:64px}
 .preview th{background:var(--sunk);font-family:var(--mono);font-weight:600;color:var(--muted);position:sticky;top:0}
 .preview .gt td{background:var(--accent-soft);font-weight:700;color:var(--fg);border-color:var(--line)}
 .preview td.rh{font-family:var(--mono);font-weight:600;color:var(--muted);background:var(--sunk)}
+.chk{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fg);cursor:pointer}
+.chk input{width:16px;height:16px;margin:0;accent-color:var(--accent)}
+.glabel{display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2;min-width:0;min-height:0;padding:1px;overflow:hidden}
+.glabel span{background:color-mix(in srgb, var(--surface) 84%, transparent);color:var(--fg);font-size:min(var(--lfs), calc(var(--cell) * .34));font-weight:600;line-height:1.2;
+  padding:0 4px;border-radius:4px;box-shadow:0 0 0 1px var(--line);max-width:100%;text-align:center;word-break:keep-all;overflow-wrap:anywhere;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.plate-wrap{gap:14px;align-items:flex-start;container-type:inline-size;--lgw:170px}
+.plate-wrap.lg-closed{--lgw:86px}
+.legend{flex:none;width:156px;display:flex;flex-direction:column;gap:6px;font-size:12px}
+.legend.closed{width:auto}
+.lg-toggle{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:4px 9px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);text-align:left}
+.lg-toggle:hover{color:var(--fg);background:var(--sunk)}
+.lg-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;max-height:420px;overflow:auto}
+.lg-item{display:grid;grid-template-columns:12px 1fr auto;gap:7px;align-items:center;width:100%;padding:4px 6px;border:0;background:none;border-radius:5px;cursor:pointer;text-align:left;font-size:12px}
+.lg-item:hover{background:var(--sunk)} .lg-item.active{background:var(--accent-soft)} .lg-item.static{cursor:default}
+.lg-item .sw{width:12px;height:12px}
+.lg-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.lg-c{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.lg-empty{margin:0;color:var(--muted);font-size:12px;padding:0 4px}
+@media (max-width:720px){
+  .plate-wrap,.plate-wrap.lg-closed{flex-direction:column;--lgw:0px}
+  .legend,.legend.closed{width:100%}
+  .lg-list{flex-direction:row;flex-wrap:wrap;gap:2px 6px;max-height:none}
+  .lg-list li{min-width:0}
+  .lg-item{grid-template-columns:12px auto auto;width:auto}
+}
+.sfilter{display:flex;flex-wrap:wrap;gap:4px;padding:0 12px 8px}
+.sf{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:2px 9px;font-size:11.5px;cursor:pointer;color:var(--muted)}
+.sf b{font-family:var(--mono);font-weight:600;margin-left:2px}
+.sf[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.proj-h button{display:flex;align-items:center;gap:6px;width:100%;border:0;background:none;padding:8px 6px 3px;cursor:pointer;text-align:left;color:var(--muted);font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.proj-h .pn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--fg)}
+.proj-h .pc{font-family:var(--mono);font-size:10.5px}
+.proj-h .caret{width:10px;font-size:10px}
+.st{display:inline-block;font-size:10.5px;font-weight:600;padding:0 6px;border-radius:999px;border:1px solid currentColor;line-height:1.5}
+.st.plan{color:var(--muted)} .st.active{color:var(--accent)} .st.done{color:var(--line-strong)}
+.exp.is-done .t{color:var(--muted)} .exp.is-done .badge{opacity:.6}
+.proj{color:var(--accent);font-weight:600}
+.daychip.done{background:var(--sunk);color:var(--muted)}
+.stepper{list-style:none;margin:8px 0 0;padding:0;display:flex;gap:0;font-size:11.5px;font-weight:600}
+.stepper li{padding:2px 12px 2px 10px;color:var(--muted);background:var(--sunk);clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%,7px 50%);margin-right:-3px}
+.stepper li:first-child{clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%);border-radius:4px 0 0 4px}
+.stepper li.past{background:var(--accent-soft);color:var(--accent)}
+.stepper li.on{background:var(--accent);color:var(--accent-ink)}
+.seg3{grid-template-columns:repeat(3,1fr)}
+.confirm.ok{background:var(--accent-soft);border-color:var(--accent)}
+.confirm .inline{display:inline-flex;align-items:center;gap:6px}
+.confirm .inline .inp{width:auto;padding:3px 6px}
 .empty{padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
 .empty h2{font-size:18px}
 .empty p{margin:0;color:var(--muted);max-width:44ch}
@@ -202,7 +253,7 @@ body{margin:0}[hidden]{display:none!important}img{max-width:100%}
 
 <header class="topbar">
   <div class="brand"><h1>Plate Map Tracker</h1><span>well plate · sample log</span><a class="langlink" href="../ko/" lang="ko">한국어</a></div>
-  <div class="store"><i class="dot" id="storeDot"></i><span id="storeTxt">Connecting to storage…</span><button class="btn sm" id="exportBtn" title="Save all experiments as a JSON file">Export backup</button><label class="btn sm" style="cursor:pointer" title="Load a backup JSON file">Import backup<input type="file" id="importInp" accept=".json,application/json" hidden></label></div>
+  <div class="store"><i class="dot" id="storeDot"></i><span id="storeTxt">Connecting to storage…</span><span class="acct" id="acct" hidden></span><button class="btn sm" id="authBtn" data-act="auth" hidden>Sign in with Google</button><button class="btn sm" id="exportBtn" title="Save all experiments as a JSON file">Export backup</button><label class="btn sm" style="cursor:pointer" title="Load a backup JSON file">Import backup<input type="file" id="importInp" accept=".json,application/json" hidden></label></div>
 </header>
 
 <div class="app">
@@ -210,6 +261,7 @@ body{margin:0}[hidden]{display:none!important}img{max-width:100%}
   <aside class="panel side-l">
     <div class="panel-h"><h2>Experiments</h2><button class="btn primary sm" id="newBtn" data-act="new">+ New</button></div>
     <div style="padding:10px 12px 8px"><input class="search" id="search" placeholder="Search experiments" aria-label="Search experiments"></div>
+    <div class="sfilter" id="statusFilter" role="group" aria-label="Status filter"></div>
     <ul class="exp-list" id="expList"></ul>
   </aside>
 
@@ -228,7 +280,12 @@ const TYPES = {
   24:{r:4,c:6,cell:54,gap:9}, 48:{r:6,c:8,cell:44,gap:7}, 96:{r:8,c:12,cell:38,gap:5}, 384:{r:16,c:24,cell:21,gap:3}
 };
 const ROWS = "ABCDEFGHIJKLMNOP";
-const PALETTE = ["#e4572e","#f3a712","#e9d758","#76b041","#2a9d8f","#3a86ff","#6a4c93","#d16ba5","#8d6e63","#90a4ae"];
+const PALETTE = ["#d9907e","#e2b475","#dccf8e","#a3c495","#86bdb2","#93b4d8","#b0a4d0","#d7a8c4","#bba595","#aab4ba"];
+/* earlier, brighter palette -> soft equivalents (applied when plates load) */
+const SOFTEN = {"#e4572e":"#d9907e","#f3a712":"#e2b475","#e9d758":"#dccf8e","#76b041":"#a3c495","#2a9d8f":"#86bdb2",
+  "#3a86ff":"#93b4d8","#6a4c93":"#b0a4d0","#d16ba5":"#d7a8c4","#8d6e63":"#bba595","#90a4ae":"#aab4ba"};
+const STATUS = { plan:"Planned", active:"Running", done:"Done" };
+const defaultStatus = e => e.seedDate && e.seedDate <= today() ? "active" : "plan";
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -252,8 +309,9 @@ let toastT; function toast(m){ const t=$("#toast"); t.textContent=m; t.hidden=fa
 /* ---------- storage: shared db when available, browser storage otherwise ---------- */
 const LS_KEY = "plate-tracker-v1";
 const store = {
-  db:null, mode:"local", chains:{},
+  db:null, mode:"local", chains:{}, remote:null, user:null, lastSync:null,
   async init(onChange){
+    this.onChange = onChange;
     let db = null;
     try { db = window.claude?.use ? await Promise.race([window.claude.use("db"), new Promise(r=>setTimeout(()=>r(null),10500))]) : null; } catch(e){ db=null; }
     if(db){
@@ -275,23 +333,80 @@ const store = {
       this.chains[exp.id] = (this.chains[exp.id]||Promise.resolve()).then(run);
       return this.chains[exp.id];
     }
+    if(this.mode==="remote"){
+      this.remote.save(this.user.uid, exp.id, body).catch(e => toast(e?.code==="permission-denied" ? "No permission to save. Sign in again" : "Could not save. Try again"));
+      return Promise.resolve();
+    }
     const list = this.readLocal().filter(x=>x.id!==exp.id); list.push({...body,id:exp.id}); this.writeLocal(list);
     state.exps = list; return Promise.resolve();
   },
   remove(id){
     if(this.mode==="db") return this.db.doc("plates/"+id).delete().catch(()=>toast("Could not delete"));
+    if(this.mode==="remote"){ this.remote.remove(this.user.uid, id).catch(()=>toast("Could not delete")); return Promise.resolve(); }
     const list = this.readLocal().filter(x=>x.id!==id); this.writeLocal(list); state.exps=list; return Promise.resolve();
   }
 };
+/* Optional cloud sync (Google login). The standalone web app supplies `remote`; Claude's page never does. */
+store.attachRemote = function(remote){
+  this.remote = remote; $("#authBtn").hidden = false; renderAuth();
+  remote.onAuth(user => {
+    this.user = user; renderAuth();
+    if(user){
+      this.mode = "remote"; setStore(false, "Connecting to cloud…");
+      let first = true;
+      remote.watch(user.uid, list => {
+        if(first){ first = false; this.migrate(list); }
+        this.onChange(list.map(x => JSON.parse(JSON.stringify(x))));
+      }, st => { this.lastSync = st; showSync(); });
+    } else {
+      remote.stop(); this.mode = "local"; this.lastSync = null;
+      setStore(false, "Saved on this device · back up regularly");
+      this.onChange(this.readLocal());
+    }
+  });
+};
+store.migrate = function(cloud){
+  const local = this.readLocal(); if(!local.length) return;
+  try { localStorage.setItem(LS_KEY + "-before-login", JSON.stringify(local)); } catch(_){}
+  const have = new Set(cloud.map(x => x.id)); let n = 0;
+  local.forEach(x => { if(!have.has(x.id)){ const b = {...x}; delete b.id; this.remote.save(this.user.uid, x.id, b).catch(()=>{}); n++; } });
+  this.writeLocal([]);
+  if(n) toast(`Moved ${n} experiment(s) from this device to your account`);
+};
+function showSync(){
+  const st = store.lastSync; if(store.mode !== "remote" || !st) return;
+  if(st.error) return setStore(false, "Sync error · reload the page");
+  if(!navigator.onLine) return setStore(false, st.pending ? "Offline · uploads when back online" : "Offline · showing saved data");
+  setStore(true, st.pending ? "Uploading…" : "Synced");
+}
+window.addEventListener("online", showSync); window.addEventListener("offline", showSync);
+function renderAuth(){
+  const btn = $("#authBtn"), acct = $("#acct"), u = store.user;
+  btn.textContent = u ? "Sign out" : "Sign in with Google";
+  btn.classList.toggle("primary", !u);
+  acct.hidden = !u; acct.textContent = u?.email || ""; acct.title = u?.email || "";
+}
+async function doAuth(){
+  if(!store.remote) return;
+  if(store.user){ await store.remote.signOut(); toast("Signed out. Your data stays in your account"); return; }
+  try { await store.remote.signIn(); }
+  catch(e){
+    const c = e?.code || "";
+    toast(c === "auth/unauthorized-domain" ? "Add this address to Firebase authorized domains"
+        : c === "auth/network-request-failed" ? "Check your internet connection"
+        : "Could not sign in (" + (c || "unknown") + ")");
+  }
+}
+window.__plateStore = store;
 function setStore(on,txt){ $("#storeDot").classList.toggle("on",on); $("#storeTxt").textContent=txt; }
 
 /* ---------- state ---------- */
 const state = {
   exps:[], currentId:null, view:"empty", // empty | new | edit | plate
-  sel:new Set(), kind:"group", zoom:1, pan:false, exportOpen:false, exportOpts:{name:true, cond:false, memo:false, used:true}, activeGroup:null, activeUse:null, hover:null, q:"", confirmDel:null,
-  draft:{ name:"", color:PALETTE[0], date:today(), condition:"", memo:"" },
+  sel:new Set(), kind:"group", zoom:1, pan:false, exportOpen:false, legendOpen:true, statusFilter:"all", projectFilter:"", collapsed:new Set(), confirmDone:false, doneDraft:"", exportOpts:{name:true, cond:false, memo:false, used:true}, activeGroup:null, activeUse:null, hover:null, q:"", confirmDel:null,
+  draft:{ name:"", color:PALETTE[0], date:"", condition:"", memo:"" },
   useDraft:{ date:today(), purpose:"", memo:"" },
-  newForm:{ name:"", type:96, date:today(), seedDate:"", desc:"" }
+  newForm:{ name:"", type:96, date:"", seedDate:"", desc:"" }
 };
 const current = () => state.exps.find(e => e.id===state.currentId);
 const groupOf = (exp, w) => exp.groups.find(g => g.wells.includes(w));
@@ -309,7 +424,7 @@ const dayOf = (exp, date) => dayLabel(dayNum(exp.seedDate, date));
 const withDay = (exp, date) => date ? `${date}${exp.seedDate ? ` (${dayOf(exp,date)})` : ""}` : "";
 
 store.init(list => {
-  list.forEach(e => { e.groups ||= []; e.uses ||= []; });
+  list.forEach(e => { e.groups ||= []; e.uses ||= []; e.groups.forEach(g => { if(SOFTEN[g.color]) g.color = SOFTEN[g.color]; }); e.status ||= defaultStatus(e); e.project ||= ""; });
   state.exps = list;
   if(state.currentId && !current()){ state.currentId=null; state.view = list.length ? "plate" : "empty"; }
   if(!state.currentId && state.view!=="new"){
@@ -324,17 +439,33 @@ store.init(list => {
 /* ---------- render ---------- */
 function renderAll(){ renderList(); renderBench(); renderSide(); }
 
+function projectNames(){ return [...new Set(state.exps.map(e=>e.project).filter(Boolean))].sort((a,b)=>a.localeCompare(b)); }
 function renderList(){
   const q = state.q.trim().toLowerCase();
-  const items = [...state.exps].filter(e => !q || (e.name||"").toLowerCase().includes(q))
-    .sort((a,b)=>(b.date||"").localeCompare(a.date||"") || (b.updatedAt||"").localeCompare(a.updatedAt||""));
-  $("#expList").innerHTML = items.length ? items.map(e => `
-    <li><button class="exp ${e.id===state.currentId && state.view==="plate"?"active":""}" data-exp="${esc(e.id)}">
+  const counts = { all: state.exps.length, plan:0, active:0, done:0 };
+  state.exps.forEach(e => counts[e.status||"plan"]++);
+  $("#statusFilter").innerHTML = [["all","All"], ...Object.entries(STATUS)].map(([k,l]) =>
+    `<button class="sf ${k}" data-act="status" data-status="${k}" aria-pressed="${state.statusFilter===k}">${l} <b>${counts[k]}</b></button>`).join("");
+  const items = [...state.exps]
+    .filter(e => !q || (e.name||"").toLowerCase().includes(q) || (e.project||"").toLowerCase().includes(q))
+    .filter(e => state.statusFilter==="all" || e.status===state.statusFilter)
+    .sort((a,b)=>(a.status==="done")-(b.status==="done") || (b.date||"").localeCompare(a.date||"") || (b.updatedAt||"").localeCompare(a.updatedAt||""));
+  if(!items.length){ $("#expList").innerHTML = `<li class="muted" style="padding:8px">${q||state.statusFilter!=="all"?"No experiments match":"No experiments yet"}</li>`; return; }
+  const byProj = new Map();
+  items.forEach(e => { const k = e.project || ""; if(!byProj.has(k)) byProj.set(k, []); byProj.get(k).push(e); });
+  const keys = [...byProj.keys()].sort((a,b)=> (a==="")-(b==="") || a.localeCompare(b));
+  const showHeads = keys.length > 1 || keys[0] !== "";
+  $("#expList").innerHTML = keys.map(k => {
+    const list = byProj.get(k), closed = state.collapsed.has(k);
+    const head = showHeads ? `<li class="proj-h"><button data-act="proj" data-proj="${esc(k)}" aria-expanded="${!closed}">
+        <span class="caret">${closed?"▸":"▾"}</span><span class="pn">${k?esc(k):"No project"}</span><span class="pc">${list.length}</span></button></li>` : "";
+    return head + (closed ? "" : list.map(e => `
+    <li><button class="exp ${e.status==="done"?"is-done":""} ${e.id===state.currentId && state.view==="plate"?"active":""}" data-exp="${esc(e.id)}">
       <span class="badge">${e.wells}</span>
       <span class="t">${esc(e.name||"Untitled")}${e.example?'<span class="ex-tag">sample</span>':''}</span>
-      <span class="m">${e.seedDate?`<b class="dayref">${dayOf(e,today())}</b> · `:""}${esc(e.date||"")} · groups: ${e.groups?.length||0}</span>
-    </button></li>`).join("")
-    : `<li class="muted" style="padding:8px">${q?"No matches":"No experiments yet"}</li>`;
+      <span class="m"><span class="st ${e.status}">${STATUS[e.status]||""}</span> ${e.status!=="done"&&e.seedDate?`<b class="dayref">${dayOf(e,today())}</b> · `:""}${esc(e.date||"")}</span>
+    </button></li>`).join(""));
+  }).join("");
 }
 
 function renderBench(){
@@ -350,21 +481,26 @@ function renderBench(){
     return;
   }
   const t = TYPES[exp.wells];
-  const cellCss = `calc(${state.zoom} * min(${t.cell}px, calc((100vw - ${t.c > 12 ? 104 : 112}px) / ${t.c} - ${t.gap}px)))`;
+  const cellCss = `calc(${state.zoom} * min(${t.cell}px, calc((100cqw - var(--lgw) - ${t.c > 12 ? 56 : 62}px) / ${t.c} - ${t.gap}px)))`;
   const showId = exp.wells <= 48;
   const activeG = state.kind==="group" && exp.groups.find(g=>g.id===state.activeGroup);
   const activeU = state.kind==="use" && exp.uses.find(u=>u.id===state.activeUse);
-  let cells = `<button class="hd corner" data-all="1" title="Select all">ALL</button>`;
-  for(let c=0;c<t.c;c++) cells += `<button class="hd" data-col="${c}" title="Select column ${c+1}">${c+1}</button>`;
+  let cells = `<button class="hd corner" data-all="1" title="Select all" style="grid-area:1/1">ALL</button>`;
+  for(let c=0;c<t.c;c++) cells += `<button class="hd" data-col="${c}" title="Select column ${c+1}" style="grid-area:1/${c+2}">${c+1}</button>`;
   for(let r=0;r<t.r;r++){
-    cells += `<button class="hd" data-row="${r}" title="Select row ${ROWS[r]}">${ROWS[r]}</button>`;
+    cells += `<button class="hd" data-row="${r}" title="Select row ${ROWS[r]}" style="grid-area:${r+2}/1">${ROWS[r]}</button>`;
     for(let c=0;c<t.c;c++){
       const w = wellId(r,c), g = groupOf(exp,w), u = useOf(exp,w);
-      const style = g ? `background:${esc(g.color)};border-color:${esc(g.color)};color:${inkFor(g.color)}` : "";
+      const style = `grid-area:${r+2}/${c+2};` + (g ? `background:${esc(g.color)};border-color:${esc(g.color)};color:${inkFor(g.color)}` : "");
       const dim = (activeG && (!g || g.id!==activeG.id) && !state.sel.has(w)) || (activeU && (!u || u.id!==activeU.id) && !state.sel.has(w));
       cells += `<div class="well ${state.sel.has(w)?"sel":""} ${dim?"dim":""} ${u?"used":""}" data-w="${w}" style="${style}" role="gridcell" aria-label="${w}${g?" "+esc(g.name):""}${u?" used":""}">${showId?`<span>${w}</span>`:""}</div>`;
     }
   }
+  exp.groups.filter(g => g.showLabel && g.wells.length).forEach(g => {
+    const ps = g.wells.map(parseWell);
+    const r0 = Math.min(...ps.map(p=>p.r)), r1 = Math.max(...ps.map(p=>p.r)), c0 = Math.min(...ps.map(p=>p.c)), c1 = Math.max(...ps.map(p=>p.c));
+    cells += `<div class="glabel" aria-hidden="true" style="grid-area:${r0+2}/${c0+2}/${r1+3}/${c1+3}"><span>${esc(g.name)}</span></div>`;
+  });
   const assigned = new Set(exp.groups.flatMap(g=>g.wells));
   const usedSet = new Set(exp.uses.flatMap(u=>u.wells));
   const remaining = [...assigned].filter(w=>!usedSet.has(w)).length;
@@ -373,9 +509,12 @@ function renderBench(){
     <section class="panel">
       <div class="exp-head">
         <div style="min-width:0">
-          <div class="eyebrow">${exp.wells}-well plate${exp.example?" · sample data":""}</div>
+          <div class="eyebrow">${exp.project?`<span class="proj">${esc(exp.project)}</span> · `:""}${exp.wells}-well plate${exp.example?" · sample data":""}</div>
           <div class="title-row"><h2>${esc(exp.name||"Untitled")}</h2>
-            ${todayDay!==null?`<span class="daychip" title="Seeding date (${esc(exp.seedDate)}) = Day 0; today is">${todayDay<0?"Before seeding · ":"Today "}${dayLabel(todayDay)}</span>`:""}</div>
+            ${exp.status==="done"
+              ? `<span class="daychip done">Done${exp.doneDate?` ${esc(exp.doneDate)}`:""}${exp.seedDate&&exp.doneDate?` · ${dayOf(exp,exp.doneDate)}`:""}</span>`
+              : todayDay!==null?`<span class="daychip" title="Seeding date (${esc(exp.seedDate)}) = Day 0; today is">${todayDay<0?"Before seeding · ":"Today "}${dayLabel(todayDay)}</span>`:""}</div>
+          <ol class="stepper" aria-label="Status">${Object.keys(STATUS).map((k,i)=>`<li class="${k===exp.status?"on":""} ${Object.keys(STATUS).indexOf(exp.status)>i?"past":""}">${STATUS[k]}</li>`).join("")}</ol>
           <div class="meta">
             <span>Seeded <b>${esc(exp.seedDate||"—")}</b></span>
             <span>Experiment <b>${esc(exp.date||"—")}</b>${exp.seedDate&&exp.date?` <b class="dayref">${dayOf(exp,exp.date)}</b>`:""}</span>
@@ -386,6 +525,9 @@ function renderBench(){
           ${exp.desc?`<div class="desc">${esc(exp.desc)}</div>`:""}
         </div>
         <div class="row">
+          ${exp.status==="plan"?`<button class="btn sm" data-act="startExp">Start experiment</button>`:""}
+          ${exp.status==="active"?`<button class="btn sm primary" data-act="doneExp">Mark as done</button>`:""}
+          ${exp.status==="done"?`<button class="btn sm" data-act="reopenExp">Reopen</button>`:""}
           <button class="btn sm" data-act="editExp">Edit details</button>
           <button class="btn sm" data-act="exportMap" aria-pressed="${state.exportOpen}">Export plate map</button>
           <button class="btn sm" data-act="csv">Copy CSV</button>
@@ -394,11 +536,15 @@ function renderBench(){
       </div>
       ${state.confirmDel===exp.id?`<div style="padding:0 16px 12px"><div class="confirm">Delete this experiment and all of its groups? This cannot be undone.
         <button class="btn sm danger" data-act="delExpYes">Delete</button><button class="btn sm" data-act="delExpNo">Cancel</button></div></div>`:""}
+      ${state.confirmDone?`<div style="padding:0 16px 12px"><div class="confirm ok">Finish culture on this plate and set its status to <b>Done</b>?
+        <label class="inline">Completion date <input type="date" class="inp" id="doneDate" value="${esc(state.doneDraft||today())}"></label>
+        <button class="btn sm primary" data-act="doneYes">Mark done</button><button class="btn sm" data-act="doneNo">Cancel</button></div></div>`:""}
       ${state.exportOpen?exportPanelHTML(exp):""}
-      <div class="plate-wrap">
+      <div class="plate-wrap ${state.legendOpen?"":"lg-closed"}">
+        ${legendHTML(exp)}
         <div class="plate">
           <div class="grid ${exp.wells===384?"sq":""} ${state.pan?"pan":""}" id="grid" role="grid" aria-label="${exp.wells}-well plate map"
-            style="--cell:${cellCss};--gap:${t.gap}px;--ring:${exp.wells>=384?1:exp.wells>=96?1.5:2}px;--wfs:${exp.wells>=48?9:exp.wells>=24?11:13}px;--hdfs:${exp.wells>=384?9:12}px;
+            style="--cell:${cellCss};--gap:${t.gap}px;--ring:${exp.wells>=384?1:exp.wells>=96?1.5:2}px;--wfs:${exp.wells>=48?9:exp.wells>=24?11:13}px;--hdfs:${exp.wells>=384?9:12}px;--lfs:${exp.wells>=384?9:exp.wells>=96?10.5:12}px;
             grid-template-columns:${exp.wells>=384?16:22}px repeat(${t.c}, var(--cell));grid-template-rows:${exp.wells>=384?14:18}px repeat(${t.r}, var(--cell))">${cells}</div>
         </div>
       </div>
@@ -440,7 +586,7 @@ function exportGrids(exp){
 function exportTable(exp, sep){
   const q = sep === "," ? (v => `"${String(v??"").replace(/"/g,'""')}"`) : (v => String(v??"").replace(/[\t\r\n]+/g," "));
   const lines = [
-    ["Experiment", exp.name||""], ["Plate", `${exp.wells}-well`], ["Seeding date", exp.seedDate||""], ["Experiment date", exp.date||""],
+    ["Experiment", exp.name||""], ["Project", exp.project||""], ["Status", STATUS[exp.status]||""], ["Plate", `${exp.wells}-well`], ["Seeding date", exp.seedDate||""], ["Experiment date", exp.date||""],
   ].map(r => r.map(q).join(sep));
   if(state.exportOpts.used) lines.push(["✕ = used well"].map(q).join(sep));
   exportGrids(exp).forEach(g => { lines.push(""); lines.push(q(`[${g.title}]`)); g.rows.forEach(r => lines.push(r.map(q).join(sep))); });
@@ -492,6 +638,18 @@ function copyText(text, okMsg){
   try { navigator.clipboard.writeText(text).then(()=>toast(okMsg), fallback); } catch(_){ fallback(); }
 }
 
+function legendHTML(exp){
+  const open = state.legendOpen;
+  const items = exp.groups.map(g => `<li><button class="lg-item ${state.kind==="group"&&g.id===state.activeGroup?"active":""}" data-group="${esc(g.id)}" title="${esc(g.name)}${g.condition?" · "+esc(g.condition):""}">
+      <i class="sw" style="background:${esc(g.color)}"></i><span class="lg-n">${esc(g.name||"Untitled")}</span><span class="lg-c">${g.wells.length}</span></button></li>`).join("");
+  const used = exp.uses.reduce((n,u)=>n+u.wells.length,0);
+  return `<aside class="legend ${open?"":"closed"}" aria-label="Group legend">
+    <button class="lg-toggle" data-act="legend" aria-expanded="${open}">${open?"Groups ▾":"Groups ▸"}</button>
+    ${open ? (exp.groups.length || used ? `<ul class="lg-list">${items}${used?`<li><span class="lg-item static"><i class="xmark" aria-hidden="true"></i><span class="lg-n">Used</span><span class="lg-c">${used}</span></span></li>`:""}</ul>`
+             : `<p class="lg-empty">No groups</p>`) : ""}
+  </aside>`;
+}
+
 function hoverHTML(exp){
   const w = state.hover; if(!w) return `<span>Tap or hover over a well to see its details.</span>`;
   const g = groupOf(exp,w), u = useOf(exp,w);
@@ -510,6 +668,12 @@ function newFormHTML(){
     <div class="panel-h"><h2>${editing?"Edit experiment":"New experiment"}</h2><span class="eyebrow">${editing?"plate info":"step 1 / choose plate"}</span></div>
     <form class="panel-b" id="newForm" autocomplete="off">
       <label class="f">Experiment name<input class="inp" id="nf-name" required placeholder="e.g. HeLa MTT assay #1" value="${esc(f.name)}"></label>
+      <div class="two">
+        <label class="f">Project (optional)<input class="inp" id="nf-project" list="projectList" placeholder="e.g. Drug A screening" value="${esc(f.project)}">
+          <datalist id="projectList">${projectNames().map(p=>`<option value="${esc(p)}"></option>`).join("")}</datalist></label>
+        <div class="f" style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:500">Status
+          <div class="seg seg3" role="group" aria-label="Status">${Object.keys(STATUS).map(k=>`<button type="button" data-nfstatus="${k}" aria-pressed="${f.status===k}">${STATUS[k]}</button>`).join("")}</div></div>
+      </div>
       <div class="two">
         <label class="f">Seeding date (Day 0)<input class="inp" type="date" id="nf-seed" value="${esc(f.seedDate)}"></label>
         <label class="f">Experiment date<input class="inp" type="date" id="nf-date" value="${esc(f.date)}"></label>
@@ -545,6 +709,7 @@ function renderSide(){
         ${noGroup?`<p class="muted" style="margin:0">${noGroup} of the selected wells have no treatment group yet.</p>`:""}`
     : `
         <label class="f">Group / sample name<input class="inp" id="g-name" placeholder="e.g. Control, Drug A 10 µM" value="${esc(d.name)}"></label>
+        <label class="chk"><input type="checkbox" id="g-label" ${d.showLabel?"checked":""}> Show this group name on the plate</label>
         <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);font-weight:500">Color
           <div class="swatches">${PALETTE.map(c=>`<button type="button" class="swatch" data-color="${c}" style="background:${c}" aria-label="Color ${c}" aria-pressed="${c===d.color}"></button>`).join("")}
             <input type="color" class="custom-color" id="g-color" value="${esc(d.color)}" aria-label="Pick a custom color" title="Custom color" ${custom?'style="outline:2px solid var(--fg)"':""}></div></div>
@@ -643,6 +808,7 @@ document.addEventListener("click", e => {
   if(t.dataset.row) return selectLine("row", +t.dataset.row, e.shiftKey||e.ctrlKey||e.metaKey);
   if(t.dataset.col) return selectLine("col", +t.dataset.col, e.shiftKey||e.ctrlKey||e.metaKey);
   if(t.dataset.all) return selectLine("all", 0, false);
+  if(t.dataset.nfstatus){ readNewForm(); state.newForm.status = t.dataset.nfstatus; state.newForm.statusTouched = true; renderBench(); return; }
   if(t.dataset.type){ readNewForm(); state.newForm.type = +t.dataset.type; renderBench(); return; }
   if(t.dataset.color){ readDraft(); state.draft.color = t.dataset.color; renderSide(); return; }
   if(t.dataset.kind){
@@ -655,7 +821,7 @@ document.addEventListener("click", e => {
   if(t.dataset.group){
     const g = exp.groups.find(x=>x.id===t.dataset.group);
     if(state.kind==="group" && state.activeGroup===g.id){ resetEditor(); }
-    else { state.kind="group"; state.activeUse=null; state.activeGroup=g.id; state.sel=new Set(g.wells); state.draft={name:g.name,color:g.color,date:g.date||"",condition:g.condition||"",memo:g.memo||""}; }
+    else { state.kind="group"; state.activeUse=null; state.activeGroup=g.id; state.sel=new Set(g.wells); state.draft={name:g.name,color:g.color,date:g.date||"",condition:g.condition||"",memo:g.memo||"",showLabel:!!g.showLabel}; }
     renderAll(); return;
   }
   if(t.dataset.use){
@@ -666,9 +832,9 @@ document.addEventListener("click", e => {
   }
   switch(t.dataset.act){
     case "new":
-      state.view="new"; state.newForm={name:"",type:96,date:today(),seedDate:"",desc:""}; renderAll(); setTimeout(()=>$("#nf-name")?.focus(),0); break;
+      state.view="new"; state.newForm={name:"",type:96,date:"",seedDate:"",desc:"",project:state.projectFilter||"",status:"plan",statusTouched:false}; renderAll(); setTimeout(()=>$("#nf-name")?.focus(),0); break;
     case "editExp":
-      state.view="edit"; state.newForm={name:exp.name||"",type:exp.wells,date:exp.date||"",seedDate:exp.seedDate||"",desc:exp.desc||""}; renderAll(); break;
+      state.view="edit"; state.newForm={name:exp.name||"",type:exp.wells,date:exp.date||"",seedDate:exp.seedDate||"",desc:exp.desc||"",project:exp.project||"",status:exp.status||"plan",statusTouched:true}; renderAll(); break;
     case "cancelNew": state.view = state.exps.length ? "plate":"empty"; if(!current() && state.exps[0]) state.currentId=state.exps[0].id; renderAll(); break;
     case "clearSel": readDraft(); state.sel=new Set(); renderBench(); renderSide(); break;
     case "cancelEdit": resetEditor(); renderAll(); break;
@@ -681,6 +847,15 @@ document.addEventListener("click", e => {
     case "delExpYes": { const id=exp.id; state.confirmDel=null; state.exps=state.exps.filter(x=>x.id!==id); state.currentId=state.exps[0]?.id||null;
       state.view = state.currentId?"plate":"empty"; resetEditor(); store.remove(id); renderAll(); toast("Experiment deleted"); break; }
     case "csv": copyCSV(exp); break;
+    case "legend": state.legendOpen = !state.legendOpen; try{ localStorage.setItem("plate-tracker-legend", state.legendOpen?"1":"0"); }catch(_){} renderBench(); break;
+    case "startExp": exp.status = "active"; store.save(exp); renderAll(); toast("Status set to Running"); break;
+    case "doneExp": state.confirmDone = true; state.doneDraft = today(); renderBench(); break;
+    case "doneNo": state.confirmDone = false; renderBench(); break;
+    case "doneYes": exp.status = "done"; exp.doneDate = $("#doneDate")?.value || today(); state.confirmDone = false; store.save(exp); renderAll(); toast("Experiment marked as done"); break;
+    case "reopenExp": exp.status = "active"; delete exp.doneDate; store.save(exp); renderAll(); toast("Status set back to Running"); break;
+    case "statusAll": case "status": state.statusFilter = t.dataset.status || "all"; renderList(); break;
+    case "proj": { const k = t.dataset.proj; state.collapsed.has(k) ? state.collapsed.delete(k) : state.collapsed.add(k); renderList(); break; }
+    case "auth": doAuth(); break;
     case "exportMap": state.exportOpen = !state.exportOpen; renderBench(); break;
     case "exportClose": state.exportOpen = false; renderBench(); break;
     case "exportCopy": copyText(exportTable(exp, "\t"), "Copied. Paste it into an empty Excel cell"); break;
@@ -699,7 +874,7 @@ document.addEventListener("input", e => {
 document.addEventListener("change", e => {
   const id = e.target.id;
   if(id==="g-color" || id==="g-date" || id==="u-date"){ readDraft(); renderSide(); }
-  if(id==="nf-seed" || id==="nf-date"){ readNewForm(); renderBench(); }
+  if(id==="nf-seed" || id==="nf-date"){ readNewForm(); if(id==="nf-seed" && !state.newForm.statusTouched) state.newForm.status = defaultStatus(state.newForm); renderBench(); }
   if(id.startsWith("ex-")){ state.exportOpts[id.slice(3)] = e.target.checked; renderBench(); document.getElementById(id)?.focus(); }
 });
 
@@ -710,11 +885,13 @@ document.addEventListener("submit", e => {
     if(!f.name.trim()){ $("#nf-name").focus(); toast("Enter an experiment name"); return; }
     if(state.view==="edit"){
       const exp = current();
-      Object.assign(exp, { name:f.name.trim(), date:f.date, seedDate:f.seedDate, desc:f.desc.trim() });
+      Object.assign(exp, { name:f.name.trim(), date:f.date, seedDate:f.seedDate, desc:f.desc.trim(), project:f.project, status:f.status });
+      if(f.status !== "done") delete exp.doneDate; else exp.doneDate ||= today();
       if(!exp.groups.length && !exp.uses.length) exp.wells = f.type;
       state.view="plate"; store.save(exp); renderAll(); toast("Experiment details saved"); return;
     }
-    const exp = { id: uid(), name:f.name.trim(), wells:f.type, date:f.date, seedDate:f.seedDate, desc:f.desc.trim(), groups:[], uses:[], createdAt:new Date().toISOString() };
+    const exp = { id: uid(), name:f.name.trim(), wells:f.type, date:f.date, seedDate:f.seedDate, desc:f.desc.trim(), project:f.project, status:f.status, groups:[], uses:[], createdAt:new Date().toISOString() };
+    if(f.status === "done") exp.doneDate = today();
     state.exps = [...state.exps, exp]; state.currentId = exp.id; state.view="plate"; resetEditor();
     store.save(exp); renderAll(); toast("Experiment created. Select wells to make a group");
   }
@@ -736,7 +913,7 @@ document.addEventListener("submit", e => {
     let g = exp.groups.find(x=>x.id===state.activeGroup);
     const name = d.name.trim() || `Group ${exp.groups.length + (g?0:1)}`;
     if(!g){ g = { id: uid() }; exp.groups.push(g); }
-    Object.assign(g, { name, color:d.color, date:d.date, condition:d.condition.trim(), memo:d.memo.trim(), wells });
+    Object.assign(g, { name, color:d.color, date:d.date, condition:d.condition.trim(), memo:d.memo.trim(), showLabel:!!d.showLabel, wells });
     exp.groups.forEach(o => { if(o!==g) o.wells = o.wells.filter(w=>!state.sel.has(w)); });
     exp.groups = exp.groups.filter(o => o.wells.length);
     const wasEdit = !!state.activeGroup;
@@ -746,18 +923,18 @@ document.addEventListener("submit", e => {
 
 function readDraft(){
   if(!$("#gForm")) return; const v=id=>document.getElementById(id)?.value;
-  if($("#g-name")) Object.assign(state.draft,{ name:v("g-name")??"", date:v("g-date")??"", condition:v("g-cond")??"", memo:v("g-memo")??"" });
+  if($("#g-name")) Object.assign(state.draft,{ name:v("g-name")??"", date:v("g-date")??"", condition:v("g-cond")??"", memo:v("g-memo")??"", showLabel:!!$("#g-label")?.checked });
   if($("#u-date")) Object.assign(state.useDraft,{ date:v("u-date")??"", purpose:v("u-purpose")??"", memo:v("u-memo")??"" });
 }
 function readNewForm(){ if(!$("#newForm")) return; const v=id=>document.getElementById(id).value;
-  Object.assign(state.newForm,{ name:v("nf-name"), date:v("nf-date"), seedDate:v("nf-seed"), desc:v("nf-desc") }); }
+  Object.assign(state.newForm,{ name:v("nf-name"), date:v("nf-date"), seedDate:v("nf-seed"), desc:v("nf-desc"), project:v("nf-project").trim() }); }
 function resetEditor(){
   const exp=current(); const used = new Set((exp?.groups||[]).map(g=>g.color));
   state.activeGroup=null; state.activeUse=null; state.sel=new Set();
-  state.draft={ name:"", color: PALETTE.find(c=>!used.has(c)) || PALETTE[0], date: state.draft.date || today(), condition:"", memo:"" };
+  state.draft={ name:"", color: PALETTE.find(c=>!used.has(c)) || PALETTE[0], date: "", condition:"", memo:"", showLabel: !!state.draft.showLabel };
   state.useDraft={ date: state.useDraft.date || today(), purpose:"", memo:"" };
 }
-function openExp(id){ state.zoom=1; state.exportOpen=false; state.currentId=id; state.view="plate"; state.kind="group"; state.confirmDel=null; state.hover=null; resetEditor(); renderAll(); }
+function openExp(id){ state.zoom=1; state.exportOpen=false; state.confirmDone=false; state.currentId=id; state.view="plate"; state.kind="group"; state.confirmDel=null; state.hover=null; resetEditor(); renderAll(); }
 
 function copyCSV(exp){
   const q = s => `"${String(s??"").replace(/"/g,'""')}"`;
@@ -772,6 +949,7 @@ function copyCSV(exp){
 }
 document.addEventListener("keydown", e => { if(e.key==="Escape" && state.view==="plate" && state.sel.size){ state.sel=new Set(); renderBench(); renderSide(); } });
 
+try{ if(localStorage.getItem("plate-tracker-legend")==="0") state.legendOpen=false; }catch(_){}
 /* ---------- backup: export / import JSON (standalone version) ---------- */
 document.getElementById("exportBtn").addEventListener("click", () => {
   const blob = new Blob([JSON.stringify({app:"plate-map-tracker",version:2,exportedAt:new Date().toISOString(),experiments:state.exps},null,2)],{type:"application/json"});
@@ -788,7 +966,8 @@ document.getElementById("importInp").addEventListener("change", async e => {
     const valid = list.filter(x => x && x.id && TYPES[x.wells] && Array.isArray(x.groups));
     valid.forEach(x => { x.uses ||= []; });
     const map = new Map(state.exps.map(x=>[x.id,x])); valid.forEach(x => map.set(x.id, x));
-    state.exps = [...map.values()]; store.writeLocal(state.exps);
+    state.exps = [...map.values()];
+    if(store.mode === "remote") valid.forEach(x => store.save(x)); else store.writeLocal(state.exps);
     if(!current() && state.exps[0]){ state.currentId = state.exps[0].id; state.view="plate"; }
     renderAll(); toast(`Loaded ${valid.length} experiment(s)`);
   } catch(_){ toast("Could not read the backup. Check that it is a JSON file exported from this app"); }
@@ -800,6 +979,43 @@ try { localStorage.setItem("plate-tracker-lang", document.documentElement.lang);
 
 renderAll();
 })();
+</script>
+<script type="module">
+// Google login + real-time cloud sync (Firebase). If this fails to load, the app keeps working on this device only.
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+const app = initializeApp({"apiKey": "AIzaSyAahIgcefZ1dx_OTLbHESbQrU_64raQvTw", "authDomain": "plate-map-a860c.firebaseapp.com", "projectId": "plate-map-a860c", "storageBucket": "plate-map-a860c.firebasestorage.app", "messagingSenderId": "291692292128", "appId": "1:291692292128:web:5359bef77aec9b2d217445"});
+const auth = getAuth(app);
+let db;
+try { db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
+catch (_) { db = initializeFirestore(app, {}); }
+getRedirectResult(auth).catch(() => {});
+let unsub = null;
+const plates = uid => collection(db, "users", uid, "plates");
+window.__plateStore?.attachRemote({
+  onAuth: cb => onAuthStateChanged(auth, u => cb(u ? { uid: u.uid, email: u.email || u.displayName || "" } : null)),
+  watch(uid, onList, onStatus) {
+    unsub?.();
+    unsub = onSnapshot(plates(uid), { includeMetadataChanges: true },
+      snap => { onList(snap.docs.map(d => ({ ...d.data(), id: d.id }))); onStatus({ pending: snap.metadata.hasPendingWrites, fromCache: snap.metadata.fromCache }); },
+      err => onStatus({ error: err.code }));
+  },
+  stop() { unsub?.(); unsub = null; },
+  save: (uid, id, body) => setDoc(doc(db, "users", uid, "plates", id), body),
+  remove: (uid, id) => deleteDoc(doc(db, "users", uid, "plates", id)),
+  async signIn() {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    try { await signInWithPopup(auth, provider); }
+    catch (e) {
+      if (["auth/popup-blocked", "auth/operation-not-supported-in-this-environment"].includes(e.code)) return signInWithRedirect(auth, provider);
+      if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return;
+      throw e;
+    }
+  },
+  signOut: () => signOut(auth),
+});
 </script>
 
 </body>
