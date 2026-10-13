@@ -12,6 +12,7 @@ Well plate(4–384 well)의 샘플 위치, 처리 조건, 사용 기록을 관�
 - 드래그로 well 구역 지정, 색상·처리 조건·메모 기록, plate 위 구역 이름 표시
 - 꺼내 쓴 well은 "사용"으로 ✕ 표시
 - 상태 관리: 계획 → 실험 → 완료
+- 기존 plate 복제 (구역 배치 그대로)
 - Plate map 내보내기 (CSV)
 - 구글 로그인 시 PC·휴대폰 실시간 동기화
 
@@ -47,6 +48,7 @@ A web app for tracking sample positions, treatments and used wells on 4–384 we
 - Drag to select wells into groups; record color, condition and notes; show group names on the plate
 - Mark wells taken out for other experiments as "Used" (shown with ✕)
 - Track status: Planned → Running → Done
+- Duplicate an existing plate with its group layout
 - Export the plate map as CSV
 - Sign in with Google to sync in real time between PC and phone
 
