@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Plate Map">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>window.PLATE_APP = true; try { var t = localStorage.getItem("plate-tracker-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
 <title>Plate Map Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,8 +106,8 @@ textarea.inp{resize:vertical;min-height:64px}
 .desc{margin-top:6px;font-size:13px;max-width:65ch;color:var(--fg);white-space:pre-wrap}
 
 .plate-wrap{overflow-x:auto;padding:16px;display:flex;justify-content:center}
-.plate{position:relative;background:var(--plate);border:2px solid var(--plate-edge);border-radius:14px;padding:12px 16px 16px 10px;
-  clip-path:polygon(28px 0,100% 0,100% 100%,28px 100%,0 calc(100% - 28px),0 28px);flex:none}
+.plate{position:relative;background:var(--plate);border:2px solid var(--plate-edge);border-radius:14px;padding:12px 16px 14px 10px;flex:none;
+  box-shadow:inset 0 0 0 5px var(--plate), inset 0 0 0 6px var(--line)}
 .grid{display:grid;gap:var(--gap);user-select:none;-webkit-user-select:none;touch-action:none}
 .hd{font-family:var(--mono);font-size:var(--hdfs);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:4px;background:none;border:0;padding:0}
 .hd:hover{color:var(--accent);background:var(--sunk)}
@@ -189,7 +190,7 @@ textarea.inp{resize:vertical;min-height:64px}
 .chk{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fg);cursor:pointer}
 .chk input{width:16px;height:16px;margin:0;accent-color:var(--accent)}
 .glabel{display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:2;min-width:0;min-height:0;padding:1px;overflow:hidden}
-.glabel span{background:color-mix(in srgb, var(--surface) 84%, transparent);color:var(--fg);font-size:min(var(--lfs), calc(var(--cell) * .34));font-weight:600;line-height:1.2;
+.glabel span{background:color-mix(in srgb, var(--surface) 84%, transparent);color:var(--fg);font-size:calc(min(var(--lfs), calc(var(--cell) * .34)) * var(--lscale, 1.25));font-weight:600;line-height:1.2;
   padding:0 4px;border-radius:4px;box-shadow:0 0 0 1px var(--line);max-width:100%;text-align:center;word-break:keep-all;overflow-wrap:anywhere;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .plate-wrap{gap:14px;align-items:flex-start;container-type:inline-size;--lgw:170px}
@@ -253,6 +254,9 @@ textarea.inp{resize:vertical;min-height:64px}
 @media (max-width:720px){.help-tabs{order:3;flex-basis:100%}.help-body{padding:8px}}
 .dup .f{max-width:420px}
 .checks input:disabled + *{opacity:.5}
+.lsize{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.lsize select{font-size:12px;padding:3px 6px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--fg)}
+.theme-btn{min-width:74px}
 .empty{padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
 .empty h2{font-size:18px}
 .empty p{margin:0;color:var(--muted);max-width:44ch}
@@ -273,6 +277,7 @@ body{margin:0}[hidden]{display:none!important}img{max-width:100%}
 <header class="topbar">
   <div class="brand"><h1>Plate Map Tracker</h1><span>well plate · sample log</span><a class="langlink" href="../en/" lang="en">English</a></div>
   <button class="btn sm help-btn" id="helpBtn" data-act="help" hidden>? 사용법</button>
+  <button class="btn sm theme-btn" id="themeBtn" data-act="theme" hidden></button>
   <div class="store"><i class="dot" id="storeDot"></i><span id="storeTxt">저장소 연결 중…</span><span class="acct" id="acct" hidden></span><button class="btn sm" id="authBtn" data-act="auth" hidden>Google로 로그인</button><button class="btn sm" id="exportBtn" title="모든 실험을 JSON 파일로 저장">백업 내보내기</button><label class="btn sm" style="cursor:pointer" title="백업 JSON 파일 불러오기">백업 불러오기<input type="file" id="importInp" accept=".json,application/json" hidden></label></div>
 </header>
 
@@ -306,6 +311,7 @@ const PALETTE = ["#d9907e","#e2b475","#dccf8e","#a3c495","#86bdb2","#93b4d8","#b
 const SOFTEN = {"#e4572e":"#d9907e","#f3a712":"#e2b475","#e9d758":"#dccf8e","#76b041":"#a3c495","#2a9d8f":"#86bdb2",
   "#3a86ff":"#93b4d8","#6a4c93":"#b0a4d0","#d16ba5":"#d7a8c4","#8d6e63":"#bba595","#90a4ae":"#aab4ba"};
 const STATUS = { plan:"계획", active:"실험", done:"완료" };
+const LABEL_SIZES = [{k:1, n:"작게"}, {k:1.25, n:"보통"}, {k:1.6, n:"크게"}, {k:2, n:"아주 크게"}];
 const defaultStatus = e => e.seedDate && e.seedDate <= today() ? "active" : "plan";
 /* Sample plates shown on a device's very first visit (local storage only). Dates are relative to today. */
 function shiftDay(n){ const d = new Date(); d.setDate(d.getDate() + n); return new Date(d - d.getTimezoneOffset()*6e4).toISOString().slice(0,10); }
@@ -529,7 +535,7 @@ function renderBench(){
   }
   const t = TYPES[exp.wells];
   const cellCss = `calc(${state.zoom} * min(${t.cell}px, calc((100cqw - var(--lgw) - ${t.c > 12 ? 56 : 62}px) / ${t.c} - ${t.gap}px)))`;
-  const showId = exp.wells <= 48;
+  const showId = false;
   const activeG = state.kind==="group" && exp.groups.find(g=>g.id===state.activeGroup);
   const activeU = state.kind==="use" && exp.uses.find(u=>u.id===state.activeUse);
   let cells = `<button class="hd corner" data-all="1" title="전체 선택" style="grid-area:1/1">ALL</button>`;
@@ -593,13 +599,15 @@ function renderBench(){
         ${legendHTML(exp)}
         <div class="plate">
           <div class="grid ${exp.wells===384?"sq":""} ${state.pan?"pan":""}" id="grid" role="grid" aria-label="${exp.wells}-well plate map"
-            style="--cell:${cellCss};--gap:${t.gap}px;--ring:${exp.wells>=384?1:exp.wells>=96?1.5:2}px;--wfs:${exp.wells>=48?9:exp.wells>=24?11:13}px;--hdfs:${exp.wells>=384?9:12}px;--lfs:${exp.wells>=384?9:exp.wells>=96?10.5:12}px;
+            style="--cell:${cellCss};--gap:${t.gap}px;--ring:${exp.wells>=384?1:exp.wells>=96?1.5:2}px;--wfs:${exp.wells>=48?9:exp.wells>=24?11:13}px;--hdfs:${exp.wells>=384?9:12}px;--lfs:${exp.wells>=384?9:exp.wells>=96?10.5:12}px;--lscale:${LABEL_SIZES[exp.labelSize ?? 1].k};
             grid-template-columns:${exp.wells>=384?16:22}px repeat(${t.c}, var(--cell));grid-template-rows:${exp.wells>=384?14:18}px repeat(${t.r}, var(--cell))">${cells}</div>
         </div>
       </div>
       <div class="hover-line" id="hoverLine">${hoverHTML(exp)}</div>
       <div class="toolbar">
         <span class="hint">드래그로 범위 선택 · Shift/Ctrl+드래그로 추가 · 행·열 머리글 클릭 · 탭하면 well 정보 · <i class="xmark" aria-hidden="true"></i> 사용됨</span>
+        ${exp.groups.some(g=>g.showLabel)?`<label class="lsize">구역 이름 크기
+          <select id="labelSize">${LABEL_SIZES.map((o,i)=>`<option value="${i}" ${(exp.labelSize ?? 1)===i?"selected":""}>${o.n}</option>`).join("")}</select></label>`:""}
         <span class="zoom" role="group" aria-label="확대"><button data-act="zoomOut" aria-label="축소" ${state.zoom<=1?"disabled":""}>−</button><button data-act="zoomIn" aria-label="확대" ${state.zoom>=3?"disabled":""}>+</button></span>
         <button class="btn sm" data-act="pan" aria-pressed="${state.pan}" title="켜면 plate를 손가락으로 스크롤하고, 탭하면 well 정보만 봅니다">이동 모드</button>
         <span class="selcount">${state.sel.size} 선택</span>
@@ -762,6 +770,19 @@ function duplicateExp(exp){
   store.save(copy);
   openExp(copy.id);
   toast("복제했습니다. 날짜는 정보 수정에서 입력하세요");
+}
+
+/* ---------- light / dark theme choice (standalone & web app builds) ---------- */
+const THEMES = [["auto","◐ 자동"],["light","☀ 라이트"],["dark","☾ 다크"]];
+function currentTheme(){ try{ return localStorage.getItem("plate-tracker-theme") || "auto"; }catch(_){ return "auto"; } }
+function applyTheme(t){
+  if(t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", t);
+  const b = $("#themeBtn"); if(b){ const th = THEMES.find(x=>x[0]===t) || THEMES[0]; b.textContent = th[1]; b.title = "화면 모드: " + th[1].slice(2) + " (눌러서 바꾸기)"; }
+}
+function cycleTheme(){
+  const i = THEMES.findIndex(x=>x[0]===currentTheme()); const next = THEMES[(i+1) % THEMES.length][0];
+  try{ localStorage.setItem("plate-tracker-theme", next); }catch(_){}
+  applyTheme(next);
 }
 
 function hoverHTML(exp){
@@ -963,6 +984,7 @@ document.addEventListener("click", e => {
       state.view = state.currentId?"plate":"empty"; resetEditor(); store.remove(id); renderAll(); toast("실험을 삭제했습니다"); break; }
     case "csv": copyCSV(exp); break;
     case "help": openHelp(0); break;
+    case "theme": cycleTheme(); break;
     case "helpClose": closeHelp(); break;
     case "helpPrev": openHelp(Math.max(0, state.helpIdx - 1)); break;
     case "helpNext": openHelp(Math.min(window.PLATE_HELP.items.length - 1, state.helpIdx + 1)); break;
@@ -997,6 +1019,7 @@ document.addEventListener("change", e => {
   const id = e.target.id;
   if(id==="g-color" || id==="g-date" || id==="u-date"){ readDraft(); renderSide(); }
   if(id==="nf-seed" || id==="nf-date"){ readNewForm(); if(id==="nf-seed" && !state.newForm.statusTouched) state.newForm.status = defaultStatus(state.newForm); renderBench(); }
+  if(id==="labelSize"){ const exp=current(); exp.labelSize = +e.target.value; store.save(exp); renderBench(); $("#labelSize")?.focus(); return; }
   if(id.startsWith("ex-")){ state.exportOpts[id.slice(3)] = e.target.checked; renderBench(); document.getElementById(id)?.focus(); }
 });
 
@@ -1079,6 +1102,7 @@ document.addEventListener("keydown", e => {
 document.addEventListener("keydown", e => { if(e.key==="Escape" && state.view==="plate" && state.sel.size){ state.sel=new Set(); renderBench(); renderSide(); } });
 
 try{ if(localStorage.getItem("plate-tracker-legend")==="0") state.legendOpen=false; }catch(_){}
+if(window.PLATE_APP){ $("#themeBtn").hidden = false; applyTheme(currentTheme()); }
 if(window.PLATE_HELP){
   $("#helpBtn").hidden = false;
   let seen = true; try{ seen = !!localStorage.getItem("plate-tracker-help-seen"); }catch(_){}
